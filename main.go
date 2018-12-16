@@ -30,6 +30,7 @@ func main() {
 	router.HandleFunc("/people", GetPeople).Methods("GET")
 	router.HandleFunc("/people/{id}", GetPerson).Methods("GET")
 	router.HandleFunc("/people/{id}", CreatePerson).Methods("POST")
+	router.HandleFunc("/people/{id}", DeletePerson).Methods("DELETE")
 	log.Fatal(http.ListenAndServe(":8000", router))
 }
 
@@ -56,4 +57,15 @@ func CreatePerson(w http.ResponseWriter, r *http.Request) {
 	person.ID = params["id"]
 	people = append(people, person)
 	json.NewEncoder(w).Encode(people)
+}
+
+func DeletePerson(w http.ResponseWriter, r *http.Request) {
+	params := mux.Vars(r)
+	for index, item := range people {
+		if item.ID == params["id"] {
+			people = append(people[:index], people[index+1:]...)
+			break
+		}
+		json.NewEncoder(w).Encode(people)
+	}
 }
