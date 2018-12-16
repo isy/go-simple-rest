@@ -29,6 +29,7 @@ func main() {
 	router := mux.NewRouter()
 	router.HandleFunc("/people", GetPeople).Methods("GET")
 	router.HandleFunc("/people/{id}", GetPerson).Methods("GET")
+	router.HandleFunc("/people/{id}", CreatePerson).Methods("POST")
 	log.Fatal(http.ListenAndServe(":8000", router))
 }
 
@@ -46,4 +47,13 @@ func GetPerson(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 	json.NewEncoder(w).Encode(&Person{})
+}
+
+func CreatePerson(w http.ResponseWriter, r *http.Request) {
+	params := mux.Vars(r)
+	var person Person
+	_ = json.NewDecoder(r.Body).Decode(&person)
+	person.ID = params["id"]
+	people = append(people, person)
+	json.NewEncoder(w).Encode(people)
 }
